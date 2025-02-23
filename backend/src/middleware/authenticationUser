@@ -1,0 +1,51 @@
+const jwt = require('jsonwebtoken');
+
+const authenticateUser = (req, res, next) => {
+  const token = req.header('Authorization');
+  console.log("process.env.SECRET_KEY ", process.env.SECRET_KEY);
+
+  if (!token) {
+    return res.status(401).json({ message: 'Token is not provided.' });
+  }
+
+  try {
+    const values = jwt.verify(token, process.env.SECRET_KEY);
+    req.user = values;
+    next();
+  } catch (err) {
+    res.status(400).json({ message: 'Token is not valid.' });
+  }
+};
+
+module.exports = authenticateUser;
+
+
+
+
+
+
+// const jwt = require('jsonwebtoken');
+
+// const authenticateUser = (req, res, next) => {
+//   const token = req.header('Authorization');
+//   console.log("process.env.SECRET_KEY ",process.env.SECRET_KEY)
+
+//   if (!token) {
+//     return res.status(401).json({ message: 'token is not  provided.' , err :err.message});
+//   }
+
+//   try {
+//     const values = jwt.verify(token, process.env.SECRET_KEY);
+    
+//     req.user = values;
+    
+//     next();
+    
+  
+//   } catch (err) {
+//     res.status(400).json({ message: 'Token is not valid.'});
+//   }
+// };
+
+// module.exports = authenticateUser;
+

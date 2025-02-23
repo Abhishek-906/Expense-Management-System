@@ -1,0 +1,29 @@
+# Node.js dependencies
+node_modules/
+package-lock.json
+
+# Environment variables
+.env
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Database-related
+dump.rdb
+*.sqlite
+*.sqlite3
+*.db
+
+# IDE/Editor settings
+.vscode/
+.idea/
+.DS_Store
+*.swp
+
+# Build files
+dist/
+build/

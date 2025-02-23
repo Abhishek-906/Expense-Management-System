@@ -1,0 +1,25 @@
+const mongoose = require('mongoose');
+require('dotenv').config();
+
+const connectDB = async () => {
+    try {
+        const url = process.env.MONGO_URL;
+        
+        if (!url) {
+            throw new Error("MongoDB URL not found in .env");
+        }
+
+        await mongoose.connect(url, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+        });
+
+        console.log("MongoDB is connected");
+
+    } catch (err) {
+        console.log("There is an error:", err.message);
+        process.exit(1);
+    }
+};
+
+module.exports = connectDB;
