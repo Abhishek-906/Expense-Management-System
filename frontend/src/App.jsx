@@ -2,23 +2,23 @@ import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
-import { Routes, Route } from "react-router-dom";
-import Login from './components/Pages/Login'
-import SignIn from './components/Pages/SignIn'
-import DashBoard from './components/Pages/DashBoard'
+import {  Router, Routes, Route } from 'react-router-dom';
+import LoginIn from './components/Pages/Login';
+import Dashboard from './components/Pages/DashBoard';
+import SignIn from './components/Pages/SignIn';
 
 function App() {
-  const [count, setCount] = useState(0)
 
   return (
-    
-    <Routes>
-    <Route path="/" element={<Login />} />   
-    <Route path="/signin" element={<SignIn />} />   
-    <Route path="/login" element={<Login />} />   
-    <Route path="/dashboard" element={<DashBoard/>} />   
-    </Routes>
-    
+    <>
+      <Routes>
+      <Route path="/" element={<LoginIn/>} />   
+       <Route path="/signin" element={<SignIn />} />   
+      <Route path="/login" element={<LoginIn />} />   
+      <Route path="/dashboard" element={<Dashboard/>} />    
+     </Routes> 
+   {/* <h1 className='text-red-500'>hello</h1> */}
+    </>
   )
 }
 
