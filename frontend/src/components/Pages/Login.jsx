@@ -5,14 +5,14 @@ import { useNavigate, Link } from "react-router-dom";
 
 const API_BASE_URL =  "http://localhost:3000";
 
-const LoginIn = () => {
+const Login = () => {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   
   const navigate = useNavigate();
 
-  const onhandleloginIn = async() => {
+  const onhandlelogin = async() => {
     try {
         const response = await fetch(`${API_BASE_URL}/user/login`, {
         method: "POST",
@@ -52,7 +52,7 @@ const LoginIn = () => {
         </div>
 
 
-        <button className="login-in-button" onClick={onhandleloginIn}>Login in</button>
+        <button className="login-in-button" onClick={onhandlelogin}>Login in</button>
         <p id="navToLog" style={{ color: "red" }}>
           New User? <Link to="/signin">Click here</Link>
         </p>
@@ -63,5 +63,5 @@ const LoginIn = () => {
       
 
 
-export default LoginIn;
+export default Login;
 
