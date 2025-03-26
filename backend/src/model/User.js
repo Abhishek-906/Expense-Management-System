@@ -17,7 +17,7 @@ const userSchema = new mongoose.Schema({
          required: true 
         },
     role: { type: String,
-         enum: ["client", "admin"], default: "user" 
+         enum: ["user", "admin"], default: "user" 
         },
 
     monthlySalary: {

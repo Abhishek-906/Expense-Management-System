@@ -8,14 +8,12 @@ const addTrans = async (req, res) => {
   try {
     const { amount, category, type } = req.body;
     const userId = req.user.userId;
-
+  
     if(!userId){
-        return res.status(400).json({message : "invalid token"});
-    }
+        return res.status(400).json({message : "Invalid User"});
+    }   
     const user = await User.findById(userId);
    if (!user) return res.status(404).json({ message: "User not found" });
-
-
 
     const thisMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
  
@@ -29,15 +27,17 @@ const addTrans = async (req, res) => {
     let totalExpenses = transactions.reduce((total, transaction) => total + transaction.amount, 0);
 
     let bd =  user.monthlyBudget;
-
+   console.log("budget" , user.monthlyBudget);
     let total  ;
-    if(type==='expense'){
+    if(type==='expense'){   
        total = Number(totalExpenses) + Number(amount)
-    }else{
+    }else if(type==='income'){
       user.monthlyBudget = Number(user.monthlyBudget)+ Number(amount);
       bd = Number(user.monthlyBudget);
 
       await user.save();
+    }else{
+        return res.status(404).json({message : "Invalid Value"});
     }
     
 
@@ -59,13 +59,14 @@ const addTrans = async (req, res) => {
 
 const getTrans = async (req, res) => {
     try {
+        const { type, datevalue } = req.body; 
+
         const userId = req.user.userId; 
   
         if(!userId){
             return res.status(400).json({message : "invalid token"});
         }
 
-        const { type, datevalue } = req.body; 
   
         const targetuser = await User.findById(userId);
         if (!targetuser) {
@@ -104,10 +105,6 @@ const getTrans = async (req, res) => {
         });
     }
   };
-  
-
-
-
 
 const deleteTrans = async (req, res) => {
   try {
@@ -143,15 +140,6 @@ const deleteTrans = async (req, res) => {
       return res.status(400).json({ message: "Some error occurred", error: err.message });
   }
 };
-
-
-
-
-
-
-
-
-
 
 const editTrans = async (req, res) => {
   try {
@@ -220,10 +208,43 @@ const editTrans = async (req, res) => {
       return res.status(400).json({ message: "Something is wrong", error: err.message });
   }
 };
+const addImage = async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ message: "No file uploaded" });
+        }
+     const { username, email , password} = req.body;
+
+// Check if the user already exists
+let user = await User.findOne({ username });
+
+if (!user) {
+    // Create a new user if not found
+    user = new User({ username, email , password });
+    await user.save();
+}
+
+//res.status(200).json({ message: "User checked/created successfully", user });
+ // console.log("user create" , user)
+        console.log("Uploaded file:", req.file);
+
+        const { filename, path, mimetype, size } = req.file;
+
+        return res.status(200).json({
+            message: "Image uploaded successfully",
+            file: { filename, path, mimetype, size }
+        });
+
+    } catch (error) {
+        console.error("Error in addImage:", error);
+        return res.status(500).json({ message: "Internal server error", error: error.message });
+    }
+};
 
 
 
-module.exports = {addTrans , getTrans , deleteTrans , editTrans};
+
+module.exports = {addTrans , getTrans , deleteTrans , editTrans , addImage};
 
 
 
