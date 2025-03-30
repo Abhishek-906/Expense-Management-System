@@ -15,6 +15,8 @@ const SignIn = () => {
   const [monthlySalary, setMonthlySalary] = useState("");
 
   const handleSignIn = async () => {
+
+    event.preventDefault();
     if (!username || !email || !password || !fullname || !role || monthlySalary === "") {
       alert("Please fill all fields.");
       return;
@@ -52,7 +54,7 @@ const SignIn = () => {
   
   return (
     <div className="login-container">
-      <div className="form-container">
+      <form onSubmit={handleSignIn} className="form-container">
         <h2>Sign In</h2>
 
         <div className="input-group">
@@ -91,12 +93,15 @@ const SignIn = () => {
         <p id="navToLog" style={{ color: "red" }}>
           Already registered? <Link to="/">Click here</Link>
         </p>
-        <button className="sign-in-button" onClick={handleSignIn}>
+        <button className="sign-in-button">
           Sign in
         </button>
-      </div>
+      </form>
     </div>
   );
 };
 
 export default SignIn;
+
+
+
