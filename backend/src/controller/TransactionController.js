@@ -74,11 +74,17 @@ const getTrans = async (req, res) => {
                 message: "User not found"
             });
         }
-  
+
         let query = {
             userId: new mongoose.Types.ObjectId(userId),
-            type: type
         };
+        if(type!=="all"){
+             query = {
+                userId: new mongoose.Types.ObjectId(userId),
+                type: type
+            };
+        }
+       
   
         const today = new Date();    
         
@@ -95,7 +101,7 @@ const getTrans = async (req, res) => {
   
         res.status(200).json({
             message: "Transactions success",
-            info: transactions
+            transactions
         });
   
     } catch (err) {
@@ -215,7 +221,6 @@ const addImage = async (req, res) => {
         }
      const { username, email , password} = req.body;
 
-// Check if the user already exists
 let user = await User.findOne({ username });
 
 if (!user) {
@@ -224,8 +229,6 @@ if (!user) {
     await user.save();
 }
 
-//res.status(200).json({ message: "User checked/created successfully", user });
- // console.log("user create" , user)
         console.log("Uploaded file:", req.file);
 
         const { filename, path, mimetype, size } = req.file;
