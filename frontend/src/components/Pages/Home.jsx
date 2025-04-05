@@ -21,7 +21,6 @@ const Home = () => {
   const token = localStorage.getItem('token');
 
   useEffect(() => {
-    // Load user data from localStorage when component mounts
     const storedData = localStorage.getItem("userData");
     if (storedData) {
       setUserData(JSON.parse(storedData));
@@ -84,7 +83,6 @@ const Home = () => {
           username,
           email,
           password,
-          fullname,
           monthlysalary, 
         }),
       });
@@ -95,7 +93,7 @@ const Home = () => {
       if (!response.ok) {
         throw new Error(data.message || "Update failed");
       }
-  
+      navigate('/login')
     } catch (error) {
       console.error("An error occurred during value update:", error);
     }
@@ -191,16 +189,6 @@ const Home = () => {
               <input
                 type="password"  value={password} onChange={(e)=>setpassword(e.target.value)}
                 placeholder="password"
-                className="w-full border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-
-            <div className="mb-4">
-              <label className="block text-gray-700 font-medium mb-1">
-                Full Name
-              </label>
-              <input
-                type="text" value={fullname} onChange={(e)=>setfullname(e.target.value)}
                 className="w-full border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
