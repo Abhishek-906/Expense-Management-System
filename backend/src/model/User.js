@@ -27,6 +27,10 @@ const userSchema = new mongoose.Schema({
         type: Number, 
         default: 0 
     }, 
+    monthlyBudgetLeft:{
+        type: Number,
+        default:0
+    }
 });
 
 module.exports = mongoose.model("User", userSchema);

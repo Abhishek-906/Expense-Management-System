@@ -8,7 +8,6 @@ const addTrans = async (req, res) => {
   try {
     const { amount, category, type } = req.body;
     const userId = req.user.userId;
-  
     if(!userId){
         return res.status(400).json({message : "Invalid User"});
     }   
@@ -21,41 +20,28 @@ const addTrans = async (req, res) => {
       userId: userId,
       createdAt: {$gte : thisMonth}
   });
+    if(type==='income'){   
+        user.monthlySalary += Number(amount);
 
-
-
-    let totalExpenses = transactions.reduce((total, transaction) => total + transaction.amount, 0);
-
-    let bd =  user.monthlyBudget;
-   console.log("budget" , user.monthlyBudget);
-    let total  ;
-    if(type==='expense'){   
-       total = Number(totalExpenses) + Number(amount)
-    }else if(type==='income'){
-      user.monthlyBudget = Number(user.monthlyBudget)+ Number(amount);
-      bd = Number(user.monthlyBudget);
-
-      await user.save();
     }else{
-        return res.status(404).json({message : "Invalid Value"});
-    }
-    
 
-    if (user.monthlyBudget && total > bd) {
+        if(amount>(user.monthlyBudgetLeft)){
+            return res.status(404).json({message : "Budget limit exceeded!"});
+        }
+        user.monthlyBudgetLeft = user.monthlyBudgetLeft-amount;
         
-        return res.status(400).json({ message: "Budget limit exceeded!" });
     }
-   
+      await user.save();
+
+
     const transaction = new Transaction({ userId, amount, category, type });
     await transaction.save();
 
-    res.status(201).json({ message: "Transaction Done" , transaction , info : total , bd});
+    res.status(201).json({ message: "Transaction Done" , BudgetLeft : user.monthlyBudgetLeft});
 } catch (error) {
     res.status(500).json({ error: error.message });
 }
 };
-
-
 
 const getTrans = async (req, res) => {
     try {
@@ -214,6 +200,7 @@ const editTrans = async (req, res) => {
       return res.status(400).json({ message: "Something is wrong", error: err.message });
   }
 };
+
 const addImage = async (req, res) => {
     try {
         if (!req.file) {
@@ -255,5 +242,59 @@ module.exports = {addTrans , getTrans , deleteTrans , editTrans , addImage};
 
 
 
+/*
 
+
+const addTrans = async (req, res) => {
+  try {
+    const { amount, category, type } = req.body;
+    const userId = req.user.userId;
+  
+    if(!userId){
+        return res.status(400).json({message : "Invalid User"});
+    }   
+    const user = await User.findById(userId);
+   if (!user) return res.status(404).json({ message: "User not found" });
+
+    const thisMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+ 
+    const transactions = await Transaction.find({
+      userId: userId,
+      createdAt: {$gte : thisMonth}
+  });
+
+    let totalExpenses = transactions.reduce((total, transaction) => total + transaction.amount, 0);
+
+    let monthlyBudget =  user.monthlyBudget;
+    let total  ;
+    if(type==='expense'){   
+       total = Number(totalExpenses) + Number(amount)
+
+    }else if(type==='income'){
+      user.monthlyBudget = Number(user.monthlyBudget)+ Number(amount);
+      monthlyBudget = Number(user.monthlyBudget);
+
+      await user.save();
+    }else{
+        return res.status(404).json({message : "Invalid Value"});
+    }
+    
+
+    if (user.monthlyBudget && total > monthlyBudget) {
+        
+        return res.status(400).json({ message: "Budget limit exceeded!" });
+    }
+   
+    const transaction = new Transaction({ userId, amount, category, type });
+    await transaction.save();
+
+    res.status(201).json({ message: "Transaction Done" , transaction , info : total , monthlyBudget});
+} catch (error) {
+    res.status(500).json({ error: error.message });
+}
+};
+
+
+
+*/
 

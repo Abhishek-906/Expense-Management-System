@@ -7,7 +7,7 @@ const User = require('../model/User');
 const Transaction = require("../model/TransactionModel");
 
 const emailValPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
-const passwordValid = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+const passwordValid = /^(?=.*[0-9]).{6,}$/
 const alphabet = /^[A-Za-z]+$/;
 
 const register = async (req, res) => {
@@ -84,14 +84,14 @@ const login = async (req, res) => {
 
 const editUser = async (req, res) => {
     try {
-        const { username, email, password, role, monthlySalary } = req.body;
+        const { username, email, password,  monthlySalary } = req.body;
         const userId = req.user.userId;
 
         if (!userId) {
             return res.status(400).json({ message: "Invalid token" });
         }
 
-        if (!username || !email || !password || !role || monthlySalary < 0 || monthlySalary === undefined) {
+        if (!username || !email || !password  || monthlySalary < 0) {
             return res.status(400).json({ message: "Provide all required information." });
         }
 
@@ -115,7 +115,6 @@ const editUser = async (req, res) => {
         targetUser.username = username;
         targetUser.email = email;
         targetUser.password = await bcrypt.hash(password, 10);
-        targetUser.role = role;
         targetUser.monthlySalary = monthlySalary;
 
         await targetUser.save();
@@ -145,6 +144,7 @@ const monthlyBudget = async (req, res) => {
         }
 
         targetUser.monthlyBudget = monthlyBudget;
+        targetUser.monthlyBudgetLeft = monthlyBudget;
         await targetUser.save();
 
         res.status(200).json({ message: "Monthly budget updated successfully!", updatedBudget: monthlyBudget });
@@ -198,7 +198,8 @@ const dashboard = async (req, res) => {
         for (let category of categories) {
             answer[category]["percentage"] = overallAmount ? Math.floor((answer[category].amount / overallAmount) * 100) : 0;
         }
-
+        
+        const mouthbudget = 
         res.status(200).json({ message: "Success", data: answer });
     } catch (error) {
         res.status(500).json({ message: "Error occurred", error: error.message });
