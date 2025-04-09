@@ -38,37 +38,7 @@ const Home = () => {
     // setShowDropdown(false);
     setShowEditPage(true);
   };
-
-  /*
-  const handleChanges = async (event) => {
-    try {
-      event.preventDefault(); 
-
-      const response = await fetch(`${API_BASE_URL}/user/editUser`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          username,
-          email,
-          password,
-          fullname,
-          monthlySalary,
-        }),
-      });
-
-      const data = await response.json();
-      console.log(data);
-      if (!response.ok) {
-        throw new Error(data.message || "Login failed");
-      }
-
-    } catch (error) {
-    console.log("An error occurred during value update")
-    }
-  };
-
-  */
-
+  
   const handleChanges = async (event) => {
     event.preventDefault();
   
@@ -105,9 +75,6 @@ const Home = () => {
       <nav className="h-16 flex items-center justify-between p-4 bg-gray-100 shadow-md">
         <h2 className="text-xl font-bold">Absence</h2>
         <div className="flex space-x-4">
-          <div className="p-2">First</div>
-          <h1 className="p-2">Hello</h1>
-          <div className="p-2">Second</div>
 
           {/* Profile Section with Dropdown */}
           <div className="relative p-2">

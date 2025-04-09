@@ -1,28 +1,25 @@
-
-
 import React, { useState } from "react";
+
+
 
 const DashboardPart = () => {
   const [timeRange, setTimeRange] = useState("monthly");
 
-  // Financial cards data
+  // Updated financial cards data
   const financialCards = [
-    { title: "Total Balance", value: "₹87,650", icon: "💰", trend: "up" },
+    { title: "Monthly Budget", value: "₹50,000", icon: "💰", trend: "up" },
     { title: "This Month Expenses", value: "₹15,345", icon: "💸", trend: "down" },
     { title: "This Month Income", value: "₹45,000", icon: "📈", trend: "up" },
-    { title: "Last Month Expenses", value: "₹16,200", icon: "🔄", trend: "down" },
-    { title: "Weekly Average", value: "₹3,836", icon: "📅", trend: "down" },
-    { title: "Daily Budget Left", value: "₹1,022", icon: "🛡️", trend: "up" }
+    { title: "Last Month Expenses", value: "₹16,200", icon: "🔄", trend: "down" }
   ];
 
-  // Spending categories
+  // ... rest of your component remains the same ...
   const spendingCategories = [
     { name: "Food & Dining", amount: "₹4,500", percentage: 30, color: "bg-amber-400" },
     { name: "Transportation", amount: "₹2,300", percentage: 15, color: "bg-blue-500" },
     { name: "Entertainment", amount: "₹1,800", percentage: 12, color: "bg-purple-500" }
   ];
 
-  // Simplified recent activity - easier to implement
   const recentActivity = [
     { icon: "🍔", description: "Food delivery", amount: "₹350", time: "2h ago" },
     { icon: "⛽", description: "Fuel", amount: "₹1,200", time: "Yesterday" },
@@ -47,8 +44,8 @@ const DashboardPart = () => {
         </select>
       </div>
 
-      {/* Financial Cards - 6 blocks */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      {/* Updated Financial Cards - Now 4 blocks */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {financialCards.map((card, index) => (
           <div key={index} className="bg-white p-4 rounded-lg border shadow-sm">
             <div className="flex justify-between">
@@ -62,7 +59,6 @@ const DashboardPart = () => {
         ))}
       </div>
 
-      {/* Two-Column Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Spending Breakdown */}
         <div className="lg:col-span-2 bg-white p-6 rounded-lg border shadow-sm">
@@ -85,7 +81,6 @@ const DashboardPart = () => {
           </div>
         </div>
 
-        {/* Recent Activity - Simplified */}
         <div className="bg-white p-6 rounded-lg border shadow-sm">
           <h3 className="text-xl font-bold mb-4">Recent Activity</h3>
           <div className="space-y-3">
