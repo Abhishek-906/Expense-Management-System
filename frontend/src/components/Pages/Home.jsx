@@ -11,7 +11,6 @@ const Home = () => {
   const [email, setemail] = useState("");
   const [password, setpassword] = useState("");
   const [fullname, setfullname] = useState("");
-  const [monthlysalary , setmonthlysalary] = useState("");
   const [activeSection, setActiveSection] = useState("dashboard");
   const [showDropdown, setShowDropdown] = useState(false);
   const [userData, setUserData] = useState(null);
@@ -160,16 +159,7 @@ const Home = () => {
               />
             </div>
 
-            <div className="mb-6">
-              <label className="block text-gray-700 font-medium mb-1">
-                Monthly Budget
-              </label>
-              <input
-                type="number" value={monthlysalary} onChange={(e)=>setmonthlysalary(e.target.value)}
-                className="w-full border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-
+           
             <div className="flex space-x-4">
               <button
                 type="button"

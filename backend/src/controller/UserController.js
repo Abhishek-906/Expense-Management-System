@@ -34,7 +34,6 @@ const register = async (req, res) => {
                 return res.status(400).json({ message: "Only one admin is allowed." });
             }
         }
-
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const newUser = new User({
@@ -50,7 +49,7 @@ const register = async (req, res) => {
 
         res.status(201).json({ message: "User registered successfully." });
     } catch (error) {
-        res.status(500).json({ message: "Some error occurred", error: error.message });
+        res.status(500).json({ message: `Some error occurred ${error}`});
     }
 };
 
@@ -61,12 +60,10 @@ const login = async (req, res) => {
         if (!email || !password) {
             return res.status(400).json({ message: "Email and password are required." });
         }
-
         const user = await User.findOne({ email });
         if (!user || !(await bcrypt.compare(password, user.password))) {
             return res.status(401).json({ error: "Invalid email or password." });
         }
-     
         const token = jwt.sign({ userId: user._id, role: user.role }, process.env.SECRET_KEY, { expiresIn: "1h" });
 
         res.status(200).json({ 
@@ -78,7 +75,7 @@ const login = async (req, res) => {
                 role: user.role
             } });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ message: `Internal server error.${error}`});
     }
 };
 
