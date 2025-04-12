@@ -1,29 +1,95 @@
-import React, { useState } from "react";
-
-
+import React, { useState, useEffect } from "react";
 
 const DashboardPart = () => {
   const [timeRange, setTimeRange] = useState("monthly");
+  const [analyticsData, setanalyticsData] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  // Updated financial cards data
+  const dateFormat = (date) => {
+    return new Date(date).toLocaleString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
+  const getCategoryIcon = (category) => {
+    switch (category) {
+      case "food":
+        return "🍔";
+      case "bills":
+        return "💡";
+      case "salary":
+        return "💰";
+      case "other":
+        return "📦";
+      default:
+        return "🎬";
+    }
+  };
+
+  useEffect(() => {
+    const fetchAnalyticsData = async () => {
+      setLoading(true);
+      try {
+        const res = await fetch("http://localhost:3000/user/get-user-overview", {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: localStorage.getItem("token"),
+          },
+        });
+
+        const result = await res.json();
+        setanalyticsData(result.data);
+      } catch (error) {
+        console.error("Error fetching dashboard data", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchAnalyticsData();
+    setLoading(false);
+  }, []);
+
+  if (loading || !analyticsData) {
+    return <div className="p-4 text-center text-gray-500">Loading dashboard...</div>;
+  }
+
   const financialCards = [
-    { title: "Monthly Budget", value: "₹50,000", icon: "💰", trend: "up" },
-    { title: "This Month Expenses", value: "₹15,345", icon: "💸", trend: "down" },
-    { title: "This Month Income", value: "₹45,000", icon: "📈", trend: "up" },
-    { title: "Last Month Expenses", value: "₹16,200", icon: "🔄", trend: "down" }
+    { title: "Monthly Budget", value: analyticsData.monthlyBudget.amount, icon: "💰", trend: "up" },
+    { title: "This Month Expenses", value: analyticsData.thisMonthExpenses.amount, icon: "💸", trend: "down" },
+    { title: "This Month Income", value: analyticsData.thisMonthIncome.amount, icon: "📈", trend: "up" },
+    { title: "Last Month Expenses", value: analyticsData.lastMonthExpenses.amount, icon: "🔄", trend: "down" }
   ];
 
-  // ... rest of your component remains the same ...
   const spendingCategories = [
-    { name: "Food & Dining", amount: "₹4,500", percentage: 30, color: "bg-amber-400" },
-    { name: "Transportation", amount: "₹2,300", percentage: 15, color: "bg-blue-500" },
-    { name: "Entertainment", amount: "₹1,800", percentage: 12, color: "bg-purple-500" }
+    { name: "Food", amount: analyticsData.food.amount, percentage: analyticsData.food.percentage, color: "bg-amber-400" },
+    { name: "Bills", amount: analyticsData.bills.amount, percentage: analyticsData.bills.percentage, color: "bg-blue-500" },
+    { name: "Salary", amount: analyticsData.salary.amount, percentage: analyticsData.salary.percentage, color: "bg-purple-500" },
+    { name: "Other", amount: analyticsData.other.amount, percentage: analyticsData.other.percentage, color: "bg-purple-500" }
   ];
 
   const recentActivity = [
-    { icon: "🍔", description: "Food delivery", amount: "₹350", time: "2h ago" },
-    { icon: "⛽", description: "Fuel", amount: "₹1,200", time: "Yesterday" },
-    { icon: "🎬", description: "Movie tickets", amount: "₹600", time: "Nov 25" }
+    {
+      icon: getCategoryIcon(analyticsData.lastTrans?.category),
+      description: analyticsData.lastTrans?.category || "--",
+      amount: analyticsData.lastTrans?.amount || 0,
+      time: analyticsData.lastTrans ? dateFormat(analyticsData.lastTrans.createdAt) : "--",
+      type: analyticsData.lastTrans?.type || "expense"
+    },
+    {
+      icon: getCategoryIcon(analyticsData.secondlastTrans?.category),
+      description: analyticsData.secondlastTrans?.category || "--",
+      amount: analyticsData.secondlastTrans?.amount || 0,
+      time: analyticsData.secondlastTrans ? dateFormat(analyticsData.secondlastTrans.createdAt) : "--",
+      type: analyticsData.secondlastTrans?.type || "expense"
+    },
+    {
+      icon: getCategoryIcon(analyticsData.thirdLastTrans?.category),
+      description: analyticsData.thirdLastTrans?.category || "--",
+      amount: analyticsData.thirdLastTrans?.amount || 0,
+      time: analyticsData.thirdLastTrans ? dateFormat(analyticsData.thirdLastTrans.createdAt) : "--",
+      type: analyticsData.thirdLastTrans?.type || "expense"
+    }
   ];
 
   return (
@@ -34,7 +100,7 @@ const DashboardPart = () => {
           <h2 className="text-2xl font-bold">Dashboard</h2>
           <p className="text-gray-600">Your financial overview</p>
         </div>
-        <select 
+        <select
           className="border rounded-lg px-3 py-2 bg-white"
           value={timeRange}
           onChange={(e) => setTimeRange(e.target.value)}
@@ -44,7 +110,6 @@ const DashboardPart = () => {
         </select>
       </div>
 
-      {/* Updated Financial Cards - Now 4 blocks */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {financialCards.map((card, index) => (
           <div key={index} className="bg-white p-4 rounded-lg border shadow-sm">
@@ -71,7 +136,7 @@ const DashboardPart = () => {
                   <span>{category.amount} ({category.percentage}%)</span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div 
+                  <div
                     className={`h-2 rounded-full ${category.color}`}
                     style={{ width: `${category.percentage}%` }}
                   ></div>
@@ -91,10 +156,11 @@ const DashboardPart = () => {
                   <p className="font-medium">{activity.description}</p>
                   <p className="text-sm text-gray-500">{activity.time}</p>
                 </div>
-                <span className="text-red-500">-{activity.amount}</span>
+                <span className={`font-semibold ${activity?.type === "expense" ? "text-red-500" : "text-green-500"}`}>
+                  {activity?.type === "expense" ? `-₹${activity?.amount || 0}` : `+₹${activity?.amount || 0}`}
+                </span>
               </div>
             ))}
-            <button className="text-blue-500 mt-2 text-sm">View all transactions</button>
           </div>
         </div>
       </div>
@@ -103,3 +169,7 @@ const DashboardPart = () => {
 };
 
 export default DashboardPart;
+
+
+
+
