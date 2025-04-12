@@ -121,7 +121,7 @@ const editUser = async (req, res) => {
 
         res.status(200).json({ message: "User updated successfully." });
     } catch (error) {
-        res.status(500).json({ message: "Error occurred", error: error.message });
+        res.status(500).json({ message: `Error occurred ${error}` });
     }
 };
 
@@ -176,34 +176,97 @@ const deleteUserById = async (req, res) => {
     }
 };
 
-const dashboard = async (req, res) => {
+
+const getUserOverview = async (req, res) => {
     try {
-        const userId = req.user.userId;
-        if (!userId) {
-            return res.status(400).json({ message: "Invalid token" });
-        }
+      const userId = req.user?.userId;
+  
+      if (!userId) return res.status(400).json({ message: "Invalid token" });
+  
+      const user = await User.findById(userId);
+      if (!user) return res.status(404).json({ message: "User not found" });
+  
+      const monthlyBudget = user.monthlyBudget;
+      const now = new Date();
+      const firstDayOfThisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+      const lastDayOfThisMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+      const firstDayOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+      const lastDayOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+  
+      const [thisMonthExpensesDocs, lastMonthExpensesDocs, thisMonthIncomeDocs, lastMonthIncomeDocs] =
+        await Promise.all([
+          Transaction.find({ userId, type: "expense", createdAt: { $gte: firstDayOfThisMonth, $lte: lastDayOfThisMonth } }),
+          Transaction.find({ userId, type: "expense", createdAt: { $gte: firstDayOfLastMonth, $lte: lastDayOfLastMonth } }),
+          Transaction.find({ userId, type: "income", createdAt: { $gte: firstDayOfThisMonth, $lte: lastDayOfThisMonth } }),
+          Transaction.find({ userId, type: "income", createdAt: { $gte: firstDayOfLastMonth, $lte: lastDayOfLastMonth } }),
+        ]);
+  
+      const sumAmount = (docs) => docs.reduce((sum, tx) => sum + (tx.amount || 0), 0);
+  
+      const thisMonthExpenses = sumAmount(thisMonthExpensesDocs);
+      const lastMonthExpenses = sumAmount(lastMonthExpensesDocs);
+      const thisMonthIncome = sumAmount(thisMonthIncomeDocs);
+      const lastMonthIncome = sumAmount(lastMonthIncomeDocs);
+  
+      const recentTransactions = await Transaction.find({ userId })
+        .sort({ createdAt: -1 })
+        .limit(3)
+        .select("type category amount createdAt");
+  
+      const categories = ["food", "bills", "salary", "other"];
+      const analytics = {};
+      let overallAmount = 0;
+  
+      for (let category of categories) {
+        const transactions = await Transaction.find({ userId, category });
+        const totalAmount = sumAmount(transactions);
+  
+        analytics[category] = { amount: totalAmount };
+        overallAmount += totalAmount;
+      }
+  
+      for (let category of categories) {
+        analytics[category]["percentage"] = overallAmount
+          ? Math.floor((analytics[category].amount / overallAmount) * 100)
+          : 0;
+      }
+    
+      analytics["monthlyBudget"] = { amount: monthlyBudget };
 
-        const categories = ["food", "bills", "salary", "other"];
-        let answer = {};
-        let overallAmount = 0;
-
-        for (let category of categories) {
-            const transactions = await Transaction.find({ userId, category });
-            const totalAmount = transactions.reduce((sum, transaction) => sum + (transaction.amount || 0), 0);
-
-            answer[category] = { amount: totalAmount };
-            overallAmount += totalAmount;
-        }
-
-        for (let category of categories) {
-            answer[category]["percentage"] = overallAmount ? Math.floor((answer[category].amount / overallAmount) * 100) : 0;
-        }
-        
-        const mouthbudget = 
-        res.status(200).json({ message: "Success", data: answer });
+      analytics["thisMonthExpenses"] = { amount: thisMonthExpenses };
+      analytics["lastMonthExpenses"] = { amount: lastMonthExpenses };
+      analytics["thisMonthIncome"] = { amount: thisMonthIncome };
+      analytics["lastMonthIncome"] = { amount: lastMonthIncome };
+  
+      analytics["lastTrans"] = recentTransactions[0] || null;
+      analytics["secondlastTrans"] = recentTransactions[1] || null;
+      analytics["thirdLastTrans"] = recentTransactions[2] || null;
+  
+    
+      analytics["budgetLeft"] = user.monthlyBudgetLeft;
+  
+      res.status(200).json({ message: "Success", data: analytics });
     } catch (error) {
-        res.status(500).json({ message: "Error occurred", error: error.message });
+      console.error("Dashboard Error:");
+      res.status(500).json({ message: "Error occurred",error: error.message });
     }
+  
+  
+
+
 };
 
-module.exports = { login, register, editUser, monthlyBudget, deleteUserById, dashboard };
+module.exports = { login, register, editUser, monthlyBudget, deleteUserById, getUserOverview };
+
+
+
+
+
+
+
+
+
+
+
+
+

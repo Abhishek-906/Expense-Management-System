@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 import "../../index.css";
 import SetBudget from "./SetBudget";
 import DashboardPart from "./dashbordpart";
-import Transaction from "./transaction";
-const API_BASE_URL = "http://localhost:3000";
+import Transaction from "./Transaction";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const Home = () => {
   const [username, setusername] = useState("");

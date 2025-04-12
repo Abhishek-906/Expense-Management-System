@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const DashboardPart = () => {
   const [timeRange, setTimeRange] = useState("monthly");
@@ -23,7 +24,7 @@ const DashboardPart = () => {
       case "other":
         return "📦";
       default:
-        return "🎬";
+        return "";
     }
   };
 
@@ -31,7 +32,7 @@ const DashboardPart = () => {
     const fetchAnalyticsData = async () => {
       setLoading(true);
       try {
-        const res = await fetch("http://localhost:3000/user/get-user-overview", {
+        const res = await fetch(`${API_BASE_URL}/user/get-user-overview`, {
           headers: {
             "Content-Type": "application/json",
             Authorization: localStorage.getItem("token"),
