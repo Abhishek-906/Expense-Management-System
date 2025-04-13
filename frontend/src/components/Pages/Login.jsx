@@ -10,18 +10,21 @@ const Login = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-
+  
+  console.log("API_BASE_URL ",API_BASE_URL)
+  
   const onHandleLogin = async (event) => {
     event.preventDefault();
     setLoading(true);
     setError("");
-
+    console.log("url" , (`${API_BASE_URL}/user/login`));
     try {
       const response = await fetch(`${API_BASE_URL}/user/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
+
 
       const data = await response.json();
       

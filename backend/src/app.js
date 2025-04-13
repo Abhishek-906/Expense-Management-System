@@ -5,13 +5,25 @@ require('dotenv').config();
 const mongoose = require('mongoose');
 const cors = require("cors");
 const app = express();
-const PORT = process.env.PORT || 3000;
 
 
+// Allow both localhost and production frontend
+const allowedOrigins = [
+  'http://localhost:5173',
+  'https://expense-management-system-virid.vercel.app'
+];
+
+console.log("allowedOrigins ",allowedOrigins)
 
 app.use(cors({
-  origin: 'expense-management-system-virid.vercel.app',
-  credentials: true, 
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true
 }));
 
 

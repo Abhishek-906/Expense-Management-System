@@ -14,7 +14,7 @@ const register = async (req, res) => {
     try {
         const { username, email, password, fullname, role, monthlySalary } = req.body;
 
-        if (!username || !email || !password || !fullname || !role || monthlySalary < 0 || monthlySalary === undefined) {
+        if (!username || !email || !password || !fullname) {
             return res.status(400).json({ message: "Provide all required information." });
         }
 
@@ -61,6 +61,9 @@ const login = async (req, res) => {
             return res.status(400).json({ message: "Email and password are required." });
         }
         const user = await User.findOne({ email });
+
+        console.log("user user ",email)
+        
         if (!user || !(await bcrypt.compare(password, user.password))) {
             return res.status(401).json({ error: "Invalid email or password." });
         }
