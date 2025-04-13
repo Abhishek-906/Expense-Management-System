@@ -10,7 +10,7 @@ const app = express();
 // Allow both localhost and production frontend
 const allowedOrigins = [
   'http://localhost:5173',
-  'https://expense-management-system-virid.vercel.app'
+  'https://expense-management-system-50fmjuoga-abhishks-projects.vercel.app'
 ];
 
 console.log("allowedOrigins ",allowedOrigins)
